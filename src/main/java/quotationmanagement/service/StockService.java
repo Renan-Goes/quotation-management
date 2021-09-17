@@ -24,8 +24,6 @@ public class StockService {
 			return null;
 		}
 		
-		System.out.println("Stock: " + stock.getid());
-		
 		return new StockDto(stock);
 	}
 }

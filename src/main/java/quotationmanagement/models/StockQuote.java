@@ -23,6 +23,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.data.domain.Page;
+
+import quotationmanagement.controller.dto.StockQuoteDto;
 
 @Entity
 @Table(name="STOCK_QUOTES")
@@ -42,7 +45,7 @@ public class StockQuote {
       joinColumns = {@JoinColumn(name = "STOCK_QUOTEs_ID", referencedColumnName = "STOCK_QUOTE_ID")})
     @MapKeyColumn(name = "QUOTE_DATE")
     @Column(name = "QUOTE_VALUE")
-    private Map<String, Long> quotes;
+    private Map<String, BigDecimal> quotes;
     
 	public StockQuote() {
 	}
@@ -63,11 +66,11 @@ public class StockQuote {
 		this.stockId = stockId;
 	}
 
-	public Map<String, Long> getQuotes() {
+	public Map<String, BigDecimal> getQuotes() {
 		return quotes;
 	}
 
-	public void setQuotes(Map<String, Long> quotes) {
+	public void setQuotes(Map<String, BigDecimal> quotes) {
 		this.quotes = quotes;
 	}
 	

@@ -11,6 +11,7 @@ import quotationmanagement.models.StockQuote;
 import quotationmanagement.repository.StockQuoteRepository;
 import quotationmanagement.service.StockService;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class StockQuoteForm {
 	@NotEmpty
 	private String stockId;
 
-	private Map<String, Long> quotes;
+	private Map<String, BigDecimal> quotes;
 	
 	public String getStockId() {
 		return stockId;
@@ -37,18 +38,17 @@ public class StockQuoteForm {
 		this.stockId = stockId;
 	}
 
-	public Map<String, Long> getQuotes() {
+	public Map<String, BigDecimal> getQuotes() {
 		return quotes;
 	}
 
-	public void setQuotes(Map<String, Long> quotes) {
+	public void setQuotes(Map<String, BigDecimal> quotes) {
 		this.quotes = quotes;
 	}
 
 	public StockQuote convert() {
 		
 		StockService stockService = new StockService();
-//		System.out.println(stockQuote.toString());
 		StockDto stock = stockService.findStock(stockId);
 		
 		if (stock == null) {
@@ -56,10 +56,6 @@ public class StockQuoteForm {
 		}
 
 		StockQuote stockQuote = new StockQuote(stockId);
-		
-		quotes.forEach((date, value) -> {
-			System.out.println("Values: " + date + ", " + value);
-		});
 		
 		stockQuote.setQuotes(quotes);
 		
