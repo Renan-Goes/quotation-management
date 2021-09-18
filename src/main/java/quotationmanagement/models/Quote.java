@@ -1,5 +1,6 @@
 package quotationmanagement.models;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -23,6 +24,10 @@ public class Quote {
 	
 	@Column(name="VALUE")
 	private Long value;
+	
+	@ManyToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="STOCK_QUOTES_ID")
+	private StockQuote stockQuote;
 	
 	public Quote() {
 	}

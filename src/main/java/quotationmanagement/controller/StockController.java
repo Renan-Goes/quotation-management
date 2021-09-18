@@ -1,6 +1,7 @@
 package quotationmanagement.controller;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.Cacheable;
@@ -11,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,25 @@ import quotationmanagement.service.StockService;
 public class StockController {
 	
 	private StockService stockService;
+	
+	@GetMapping
+	public ResponseEntity<Stock[]> getStocks() {
+		
+			RestTemplate restTemplate = new RestTemplate();
+
+			ResponseEntity<Stock[]> response = restTemplate.getForEntity(
+					"http://localhost:8080/stock", Stock[].class);
+	
+			Stock[] stocks = response.getBody();
+			
+			if (stocks == null) {
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+			}
+			
+			return ResponseEntity.ok(stocks);
+		
+	}
+	
 	@GetMapping(path="/{id}")
 	public ResponseEntity<Stock> findStock(@PathVariable String id) {
 
@@ -40,18 +62,29 @@ public class StockController {
 		
 		Stock stock = response.getBody();
 		
+		if (stock == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+		}
+		
 		return ResponseEntity.ok(stock);
 	}
 	
 	@PostMapping
 	@Transactional
-	@CacheEvict(value="listOfStocks", allEntries=true)
 	public ResponseEntity<Stock> createStock(@RequestBody StockForm form) {
 		Stock stock = form.convert();
+		
+		StockService stockService = new StockService();
+		StockDto foundStock = stockService.findStock(stock.getid());
+		
+		if (foundStock != null) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body(stock);
+		}
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Stock> response = restTemplate.postForEntity("http://localhost:8080/stock", stock, Stock.class);
 		Stock newStock = response.getBody();
+		
 		 	
 		return ResponseEntity.ok(stock);
 	}
