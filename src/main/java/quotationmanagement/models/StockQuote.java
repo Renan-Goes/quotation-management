@@ -22,6 +22,7 @@ import javax.persistence.MapKeyColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.domain.Page;
 
@@ -29,6 +30,7 @@ import quotationmanagement.controller.dto.StockQuoteDto;
 
 @Entity
 @Table(name="STOCK_QUOTES")
+@DynamicUpdate
 public class StockQuote {
 
 	@Id
@@ -72,6 +74,10 @@ public class StockQuote {
 
 	public void setQuotes(Map<String, BigDecimal> quotes) {
 		this.quotes = quotes;
+	}
+	
+	public void addQuote(String date, BigDecimal value) {
+		this.quotes.put(date, value);
 	}
 	
 	@Override

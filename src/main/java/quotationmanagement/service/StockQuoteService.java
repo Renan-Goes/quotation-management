@@ -5,18 +5,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.github.fge.jsonpatch.JsonPatch;
-
 import quotationmanagement.controller.validation.DateValidator;
+import quotationmanagement.mapper.StockQuoteMapper;
+import quotationmanagement.models.Quote;
 import quotationmanagement.models.StockQuote;
+import quotationmanagement.repository.QuoteRepository;
 import quotationmanagement.repository.StockQuoteRepository;
 
 @Service
@@ -24,6 +27,9 @@ public class StockQuoteService {
 
 	@Autowired
 	private StockQuoteRepository stockQuoteRepository;
+	
+	@Autowired
+	private QuoteRepository quoteRepository;
 	
 	public ResponseEntity<StockQuote> sendQuote(StockQuote stockQuote) {
 		 
@@ -34,7 +40,7 @@ public class StockQuoteService {
 		
 		boolean stockQuoteExists = stockQuoteRepository.existsByStockId(stockQuote.getStockId());
 		if (stockQuoteExists) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(stockQuote);
+			return updateQuotes(stockQuote);
 		}
 		
 		if (stockQuote.getQuotes() != null) {
@@ -45,8 +51,8 @@ public class StockQuoteService {
 			Map<String, BigDecimal> sentQuotes = stockQuote.getQuotes();
 
 			for (Map.Entry<String, BigDecimal> quote : sentQuotes.entrySet()) {
-				Date validOrNot = validator.dateParse(quote.getKey());
-				if (validOrNot == null) {
+				boolean validOrNot = validator.dateParse(quote.getKey());
+				if (validOrNot) {
 					return ResponseEntity.status(HttpStatus.CONFLICT).build();
 				}
 			}
@@ -68,17 +74,57 @@ public class StockQuoteService {
 		}		
 	}
 
-//	public ResponseEntity<StockQuote> updateQuotes(String stockId, JsonPatch patch) {
-//
-//	    try {
-//	        StockQuote StockQuote = stockQuoteRepository.findStockQuoteByStockId(stockId).orElseThrow(StockQuoteNotFoundException::new);
-//	        StockQuote StockQuotePatched = applyPatchToStockQuote(patch, StockQuote);
-//	        stockQuoteRepository.updateStockQuote(StockQuotePatched);
-//	        return ResponseEntity.ok(StockQuotePatched);
-//	    } catch (JsonPatchException | JsonProcessingException e) {
-//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//	    } catch (StockQuoteNotFoundException e) {
-//	        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//	    }
-//	}
+	public ResponseEntity<StockQuote> updateQuotes(StockQuote stockQuote) {
+
+		Optional<StockQuote> foundStockQuoteOptional = stockQuoteRepository.findByStockId(stockQuote.getStockId());
+		StockQuote foundStockQuote = foundStockQuoteOptional.get();
+		stockQuote.getQuotes().forEach((date, value) -> {
+			foundStockQuote.addQuote(date, value);
+		});
+		
+		stockQuoteRepository.save(foundStockQuote);
+		
+		return ResponseEntity.ok().body(stockQuote);
+		
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//List<Quote> quotes = quoteRepository.findAll();
+//
+//quotes.forEach((quote) -> {
+//	System.out.println("Date: " + quote.getDate() + ", value: " + quote.getValue());
+//});
+//stockQuoteRepository.findStockQuoteByStockId(stockId);
+
+//System.out.println("Got into updateQuotes");
+//StockQuote stockQuoteToAddQuotes = stockQuoteRepository.findStockQuoteByStockId(stockId);
+//Map<String, BigDecimal> quotes = stockQuote.getQuotes();
+//System.out.println("Got into repository");
+//
+//quotes.forEach((date, value) -> {
+//	if (quoteRepository.findQuoteByDate(date) != null) {
+//		stockQuoteToAddQuotes.addQuote(date, value);
+//	}
+//});
+//
+//System.out.println("Added quotes");
+//
+//stockQuoteRepository.save(stockQuoteToAddQuotes);
+//
+//System.out.println("Salvei o stockQuote");
+//
+//return ResponseEntity.ok(stockQuoteToAddQuotes);
+

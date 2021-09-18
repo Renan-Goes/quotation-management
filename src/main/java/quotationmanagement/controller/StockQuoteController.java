@@ -35,8 +35,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.github.fge.jsonpatch.JsonPatch;
-
 import quotationmanagement.controller.dto.StockQuoteDto;
 import quotationmanagement.controller.form.StockQuoteForm;
 import quotationmanagement.controller.validation.DateValidator;
@@ -69,10 +67,4 @@ public class StockQuoteController {
  
 		return stockQuoteService.sendQuote(stockQuote);
 	}
-	
-//	@PatchMapping(path="{stockId}", consumes="application/json-patch+json")
-//	public ResponseEntity<StockQuote> updateQuotes(@PathVariable String stockId,
-//			@RequestBody JsonPatch patch) {
-//		return stockQuoteService.updateQuotes(stockId, patch);
-//	}
 }

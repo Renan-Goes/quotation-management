@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.validator.GenericValidator;
+
 public class DateValidator {
 	
 	private List<String> formatDates;
@@ -12,12 +14,12 @@ public class DateValidator {
 		this.formatDates = formatDates;
 	}
 	
-	public Date dateParse(String date) {
+	public boolean dateParse(String date) {
 		
 		for (String formatDate : this.formatDates) {
 			
 			try {
-				return new SimpleDateFormat(formatDate).parse(date);
+				return GenericValidator.isDate(date, formatDate, true);
 			}
 			catch(Exception e) {
 			}

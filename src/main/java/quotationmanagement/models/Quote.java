@@ -19,13 +19,8 @@ public class Quote {
 	@Column(name="QUOTE_DATE")
 	private String date;
 	
-	
 	@Column(name="QUOTE_VALUE")
 	private Long value;
-	
-//	@ManyToOne(cascade=CascadeType.ALL)
-//	@JoinColumn(name="STOCK_QUOTES_ID")
-//	private StockQuote stockQuote;
 	
 	public Quote() {
 	}
