@@ -2,6 +2,7 @@ package quotationmanagement.service;
 
 import java.net.URI;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +15,7 @@ import quotationmanagement.models.Stock;
 public class StockService {
 
 	public StockDto findStock(String id) {
+		
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Stock> response = restTemplate.getForEntity(
 				"http://localhost:8080/stock/" + id, Stock.class);

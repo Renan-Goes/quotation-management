@@ -41,15 +41,15 @@ public class StockQuote {
 	private String stockId;
 
     @ElementCollection
-    @CollectionTable(name = "STOCK_QUOTES_MAPPING", 
-      joinColumns = {@JoinColumn(name = "STOCK_QUOTEs_ID", referencedColumnName = "STOCK_QUOTE_ID")})
+    @CollectionTable(name="QUOTES", 
+      joinColumns = {@JoinColumn(name = "STOCK_QUOTE_ID", referencedColumnName = "STOCK_QUOTE_ID")})
     @MapKeyColumn(name = "QUOTE_DATE")
     @Column(name = "QUOTE_VALUE")
     private Map<String, BigDecimal> quotes;
     
 	public StockQuote() {
 	}
-	
+
 	public StockQuote(String stockId) {
 		this.stockId = stockId;
 	}

@@ -12,4 +12,6 @@ public interface StockQuoteRepository extends JpaRepository<StockQuote, String> 
 	boolean existsByStockId(String stockId);
 	
 	Page<StockQuote> findByStockId(String stockId, Pageable paging);
+
+	StockQuote findStockQuoteByStockId(String stockId);
 }

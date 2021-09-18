@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 import javax.persistence.Cacheable;
 import javax.transaction.Transactional;
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
@@ -71,7 +73,7 @@ public class StockController {
 	
 	@PostMapping
 	@Transactional
-	public ResponseEntity<Stock> createStock(@RequestBody StockForm form) {
+	public ResponseEntity<Stock> createStock(@RequestBody @Valid StockForm form) {
 		Stock stock = form.convert();
 		
 		StockService stockService = new StockService();

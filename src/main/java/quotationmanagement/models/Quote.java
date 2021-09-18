@@ -15,19 +15,17 @@ import javax.persistence.Table;
 public class Quote {
 
 	@Id 
-	@GeneratedValue(strategy=GenerationType.AUTO) 
-	@Column(name="QUOTE_ID")
-	private String id;
-	
-	@Column(name="DATE")
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="QUOTE_DATE")
 	private String date;
 	
-	@Column(name="VALUE")
+	
+	@Column(name="QUOTE_VALUE")
 	private Long value;
 	
-	@ManyToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="STOCK_QUOTES_ID")
-	private StockQuote stockQuote;
+//	@ManyToOne(cascade=CascadeType.ALL)
+//	@JoinColumn(name="STOCK_QUOTES_ID")
+//	private StockQuote stockQuote;
 	
 	public Quote() {
 	}
@@ -53,9 +51,9 @@ public class Quote {
 		this.value = value;
 	}
 
-	public String getId() {
-		return id;
-	}
+//	public String getId() {
+//		return id;
+//	}
 
 
 }
