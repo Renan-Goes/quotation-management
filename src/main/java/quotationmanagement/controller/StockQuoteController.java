@@ -52,7 +52,7 @@ public class StockQuoteController {
 	private StockQuoteService stockQuoteService = new StockQuoteService();
 
 	@GetMapping	
-	@Cacheable(value="listOfStockQuotes")
+	@Cacheable("listOfStockQuotes")
 	public List<StockQuote> list(@RequestParam(required=false) String stockId,
 			Pageable paging) {
 		return stockQuoteService.listStockQuotes(stockId, paging);

@@ -7,7 +7,7 @@ import quotationmanagement.models.Quote;
 public class QuoteDto {
 	
 	private String date;
-	private Long value;
+	private Double value;
 	
 	public QuoteDto(Quote quote) {
 		this.date = quote.getDate();
@@ -17,7 +17,7 @@ public class QuoteDto {
 	public String getdate() {
 		return date;
 	}
-	public Long getValue() {
+	public Double getValue() {
 		return value;
 	}
 	

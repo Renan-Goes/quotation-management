@@ -1,6 +1,8 @@
 package quotationmanagement.service;
 
-import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,35 +33,38 @@ public class StockQuoteService {
 	@Autowired
 	private QuoteRepository quoteRepository;
 	
-	public ResponseEntity<StockQuote> sendQuote(StockQuote stockQuote) {
-		 
+	public ResponseEntity sendQuote(StockQuote stockQuote) {
+
 		if (stockQuote == null) {
 			System.out.println("Null entity");
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(stockQuote);
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Quote is not in stock-manager");
+		}
+		
+		if (stockQuote.getQuotes() != null) {
+			DateValidator validator = new DateValidator();
+			Map<String, Double> sentQuotes = stockQuote.getQuotes();
+
+			for (Map.Entry<String, Double> quote : sentQuotes.entrySet()) {
+				boolean quoteExists = quoteRepository.existsByDate(quote.getKey());
+				if (quoteExists) {
+					return ResponseEntity.status(HttpStatus.CONFLICT).body("There is alreade a quote with this date");
+				}
+				
+				boolean validOrNot = validator.dateParse(quote.getKey());
+
+				if (!validOrNot) {
+					return ResponseEntity.status(HttpStatus.CONFLICT).body("Date is not valid");
+				}
+			}
 		}
 		
 		boolean stockQuoteExists = stockQuoteRepository.existsByStockId(stockQuote.getStockId());
 		if (stockQuoteExists) {
 			return updateQuotes(stockQuote);
 		}
-		
-		if (stockQuote.getQuotes() != null) {
-			List<String> formatDates = new ArrayList<>();
-			formatDates.add("yyyy-MM-dd");
-			formatDates.add("yyyy/MM/dd");
-			DateValidator validator = new DateValidator(formatDates);
-			Map<String, BigDecimal> sentQuotes = stockQuote.getQuotes();
-
-			for (Map.Entry<String, BigDecimal> quote : sentQuotes.entrySet()) {
-				boolean validOrNot = validator.dateParse(quote.getKey());
-				if (validOrNot) {
-					return ResponseEntity.status(HttpStatus.CONFLICT).build();
-				}
-			}
-		}
 			
 		stockQuoteRepository.save(stockQuote);
-		return ResponseEntity.ok(stockQuote);
+		return ResponseEntity.ok(stockQuote.getStockId() + " was inserted in the repository");
 	}
 
 	public List<StockQuote> listStockQuotes(String stockId, Pageable paging) {
@@ -74,57 +79,17 @@ public class StockQuoteService {
 		}		
 	}
 
-	public ResponseEntity<StockQuote> updateQuotes(StockQuote stockQuote) {
+	public ResponseEntity updateQuotes(StockQuote stockQuote) {
 
 		Optional<StockQuote> foundStockQuoteOptional = stockQuoteRepository.findByStockId(stockQuote.getStockId());
 		StockQuote foundStockQuote = foundStockQuoteOptional.get();
 		stockQuote.getQuotes().forEach((date, value) -> {
-			foundStockQuote.addQuote(date, value);
+				foundStockQuote.addQuote(date, value);				
 		});
 		
 		stockQuoteRepository.save(foundStockQuote);
 		
-		return ResponseEntity.ok().body(stockQuote);
+		return ResponseEntity.ok().body("Stock Quote was updated");
 		
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//List<Quote> quotes = quoteRepository.findAll();
-//
-//quotes.forEach((quote) -> {
-//	System.out.println("Date: " + quote.getDate() + ", value: " + quote.getValue());
-//});
-//stockQuoteRepository.findStockQuoteByStockId(stockId);
-
-//System.out.println("Got into updateQuotes");
-//StockQuote stockQuoteToAddQuotes = stockQuoteRepository.findStockQuoteByStockId(stockId);
-//Map<String, BigDecimal> quotes = stockQuote.getQuotes();
-//System.out.println("Got into repository");
-//
-//quotes.forEach((date, value) -> {
-//	if (quoteRepository.findQuoteByDate(date) != null) {
-//		stockQuoteToAddQuotes.addQuote(date, value);
-//	}
-//});
-//
-//System.out.println("Added quotes");
-//
-//stockQuoteRepository.save(stockQuoteToAddQuotes);
-//
-//System.out.println("Salvei o stockQuote");
-//
-//return ResponseEntity.ok(stockQuoteToAddQuotes);
-

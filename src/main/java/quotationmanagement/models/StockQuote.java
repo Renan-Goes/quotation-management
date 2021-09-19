@@ -1,6 +1,5 @@
 package quotationmanagement.models;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +46,7 @@ public class StockQuote {
       joinColumns = {@JoinColumn(name = "STOCK_QUOTE_ID", referencedColumnName = "STOCK_QUOTE_ID")})
     @MapKeyColumn(name = "QUOTE_DATE")
     @Column(name = "QUOTE_VALUE")
-    private Map<String, BigDecimal> quotes;
+    private Map<String, Double> quotes;
     
 	public StockQuote() {
 	}
@@ -68,16 +67,20 @@ public class StockQuote {
 		this.stockId = stockId;
 	}
 
-	public Map<String, BigDecimal> getQuotes() {
+	public Map<String, Double> getQuotes() {
 		return quotes;
 	}
 
-	public void setQuotes(Map<String, BigDecimal> quotes) {
+	public void setQuotes(Map<String, Double> quotes) {
 		this.quotes = quotes;
 	}
 	
-	public void addQuote(String date, BigDecimal value) {
+	public void addQuote(String date, Double value) {
 		this.quotes.put(date, value);
+	}
+	
+	public Double removeQuote(String date) {
+		return this.quotes.remove(date);
 	}
 	
 	@Override

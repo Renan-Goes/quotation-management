@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.persistence.Cacheable;
+import org.springframework.cache.annotation.Cacheable;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
@@ -38,20 +38,22 @@ public class StockController {
 	private StockService stockService;
 	
 	@GetMapping
+	@Cacheable("listOfStocks")
 	public ResponseEntity<Stock[]> getStocks() {
-		
-			RestTemplate restTemplate = new RestTemplate();
-
-			ResponseEntity<Stock[]> response = restTemplate.getForEntity(
-					"http://localhost:8080/stock", Stock[].class);
 	
-			Stock[] stocks = response.getBody();
-			
-			if (stocks == null) {
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-			}
-			
-			return ResponseEntity.ok(stocks);
+		System.out.println("Entrei no get stocks");
+		RestTemplate restTemplate = new RestTemplate();
+
+		ResponseEntity<Stock[]> response = restTemplate.getForEntity(
+				"http://localhost:8080/stock", Stock[].class);
+
+		Stock[] stocks = response.getBody();
+		
+		if (stocks == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		
+		return ResponseEntity.ok(stocks);
 		
 	}
 	
@@ -73,6 +75,7 @@ public class StockController {
 	
 	@PostMapping
 	@Transactional
+	@CacheEvict(value="listOfStocks", allEntries=true)
 	public ResponseEntity<Stock> createStock(@RequestBody @Valid StockForm form) {
 		Stock stock = form.convert();
 		

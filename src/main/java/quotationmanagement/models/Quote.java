@@ -20,12 +20,12 @@ public class Quote {
 	private String date;
 	
 	@Column(name="QUOTE_VALUE")
-	private Long value;
+	private Double value;
 	
 	public Quote() {
 	}
 	
-	public Quote(Long value, String date) {
+	public Quote(Double value, String date) {
 		this.value = value;
 		this.date = date;
 	}
@@ -38,11 +38,11 @@ public class Quote {
 		this.date = date;
 	}
 
-	public Long getValue() {
+	public Double getValue() {
 		return value;
 	}
 
-	public void setValue(Long value) {
+	public void setValue(Double value) {
 		this.value = value;
 	}
 
