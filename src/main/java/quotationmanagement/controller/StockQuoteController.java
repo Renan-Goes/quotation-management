@@ -40,6 +40,7 @@ import quotationmanagement.controller.form.StockQuoteForm;
 import quotationmanagement.controller.validation.DateValidator;
 import quotationmanagement.models.Stock;
 import quotationmanagement.models.StockQuote;
+import quotationmanagement.repository.QuoteRepository;
 import quotationmanagement.repository.StockQuoteRepository;
 import quotationmanagement.service.StockQuoteService;
 import quotationmanagement.service.StockService;
@@ -48,21 +49,41 @@ import quotationmanagement.service.StockService;
 @RequestMapping("/stockQuote")
 public class StockQuoteController {
 
-	@Autowired
-	private StockQuoteService stockQuoteService = new StockQuoteService();
+	private StockQuoteService stockQuoteService;
+	private StockQuoteRepository stockQuoteRepository;
+	private QuoteRepository quoteRepository;
+	
+	public StockQuoteController(StockQuoteRepository stockQuoteRepository,
+			QuoteRepository quoteRepository) {
+		
+		this.stockQuoteRepository = stockQuoteRepository;
+		this.quoteRepository = quoteRepository;
+		this.stockQuoteService = new StockQuoteService(stockQuoteRepository,
+				quoteRepository);
+	}
 
 	@GetMapping	
 	@Cacheable("listOfStockQuotes")
-	public List<StockQuote> list(@RequestParam(required=false) String stockId,
-			Pageable paging) {
-		return stockQuoteService.listStockQuotes(stockId, paging);
+	public List<StockQuote> listStockQuotes() {
+		return stockQuoteService.listStockQuotes();
+	}
+	
+	@GetMapping(path="/{stockId}")
+	public ResponseEntity<StockQuote> findStockQuote(@PathVariable String stockId) {
+		StockQuote foundStockQuote = stockQuoteService.getStockQuote(stockId);
+		
+		if (foundStockQuote == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+		}
+		
+		return ResponseEntity.ok().body(foundStockQuote);
 	}
 
 	@PostMapping
 	@Transactional
 	@CacheEvict(value="listOfStockQuotes", allEntries=true)
 	public ResponseEntity<StockQuote> createStockQuote(
-			@RequestBody @Valid StockQuoteForm form, UriComponentsBuilder uriBuilder) {
+			@RequestBody @Valid StockQuoteForm form) {
 		StockQuote stockQuote = form.convert();
  
 		return stockQuoteService.sendQuote(stockQuote);

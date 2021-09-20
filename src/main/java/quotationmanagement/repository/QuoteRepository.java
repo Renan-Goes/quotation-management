@@ -11,5 +11,5 @@ import quotationmanagement.models.Quote;
 public interface QuoteRepository extends JpaRepository<Quote, String> {
 	Quote findQuoteByDate(String date);
 
-	boolean existsByDate(String key);
+	Optional<Quote> existsByDate(String key);
 }

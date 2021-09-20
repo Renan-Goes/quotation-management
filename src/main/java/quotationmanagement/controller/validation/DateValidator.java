@@ -30,7 +30,7 @@ public class DateValidator {
 				validOrNot = result.equals(date);
 			}
 			catch(Exception f) {
-				System.out.println("Bugou");
+				System.out.println("Strange date");
 			}
 		}
 	

@@ -15,8 +15,8 @@ import quotationmanagement.models.StockQuote;
 public interface StockQuoteRepository extends JpaRepository<StockQuote, String> {
 
 	boolean existsByStockId(String stockId);
-	
-	Page<StockQuote> findByStockId(String stockId, Pageable paging);
 
 	Optional<StockQuote> findByStockId(String stockId);
+	
+	Optional<StockQuote> findById(String id);
 }

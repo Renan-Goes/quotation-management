@@ -41,7 +41,6 @@ public class StockController {
 	@Cacheable("listOfStocks")
 	public ResponseEntity<Stock[]> getStocks() {
 	
-		System.out.println("Entrei no get stocks");
 		RestTemplate restTemplate = new RestTemplate();
 
 		ResponseEntity<Stock[]> response = restTemplate.getForEntity(
@@ -80,18 +79,13 @@ public class StockController {
 		Stock stock = form.convert();
 		
 		StockService stockService = new StockService();
-		StockDto foundStock = stockService.findStock(stock.getid());
 		
-		if (foundStock != null) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body(stock);
+		boolean createdOrNot = stockService.createStock(stock);
+		if (createdOrNot == false) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
-
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Stock> response = restTemplate.postForEntity("http://localhost:8080/stock", stock, Stock.class);
-		Stock newStock = response.getBody();
-		
-		 	
-		return ResponseEntity.ok(stock);
+	
+		return ResponseEntity.ok().body(stock);
 	}
 	
 }

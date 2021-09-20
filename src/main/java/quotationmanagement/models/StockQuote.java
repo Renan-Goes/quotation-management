@@ -55,6 +55,12 @@ public class StockQuote {
 		this.stockId = stockId;
 	}
 
+	public StockQuote(String stockId, Map<String, Double> quotes) {
+		this.stockId = stockId;
+		this.quotes = quotes;
+		
+	}
+
 	public String getId() {
 		return id;
 	}

@@ -17,6 +17,11 @@ public class StockForm {
 	private String id;
 	private String description;	
 
+	public StockForm(@NotEmpty String id, String description) {
+		this.id = id;
+		this.description = description;
+	}
+
 	public String getId() {
 		return id;
 	}

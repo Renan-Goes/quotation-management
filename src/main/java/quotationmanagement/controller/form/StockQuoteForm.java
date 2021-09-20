@@ -29,6 +29,14 @@ public class StockQuoteForm {
 
 	private Map<String, Double> quotes;
 	
+	public StockQuoteForm() {
+	}
+
+	public StockQuoteForm(String stockId, Map<String, Double> quotes) {
+		this.stockId = stockId;
+		this.quotes = quotes;
+	}
+	
 	public String getStockId() {
 		return stockId;
 	}

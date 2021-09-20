@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import quotationmanagement.controller.validation.DateValidator;
-import quotationmanagement.mapper.StockQuoteMapper;
 import quotationmanagement.models.Quote;
 import quotationmanagement.models.StockQuote;
 import quotationmanagement.repository.QuoteRepository;
@@ -27,17 +26,21 @@ import quotationmanagement.repository.StockQuoteRepository;
 @Service
 public class StockQuoteService {
 
-	@Autowired
 	private StockQuoteRepository stockQuoteRepository;
 	
-	@Autowired
 	private QuoteRepository quoteRepository;
 	
-	public ResponseEntity sendQuote(StockQuote stockQuote) {
+	public StockQuoteService(StockQuoteRepository stockQuoteRepository, 
+			QuoteRepository quoteRepository) {
+		this.stockQuoteRepository = stockQuoteRepository;
+		this.quoteRepository = quoteRepository;
+	}
+	
+	public ResponseEntity<StockQuote> sendQuote(StockQuote stockQuote) {
 
 		if (stockQuote == null) {
 			System.out.println("Null entity");
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Quote is not in stock-manager");
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
 		}
 		
 		if (stockQuote.getQuotes() != null) {
@@ -45,15 +48,15 @@ public class StockQuoteService {
 			Map<String, Double> sentQuotes = stockQuote.getQuotes();
 
 			for (Map.Entry<String, Double> quote : sentQuotes.entrySet()) {
-				boolean quoteExists = quoteRepository.existsByDate(quote.getKey());
-				if (quoteExists) {
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("There is alreade a quote with this date");
-				}
+//				Optional<Quote> foundQuote = quoteRepository.existsByDate(quote.getKey());
+//				if (foundQuote.isPresent() && foundQuote.get) {
+//					return ResponseEntity.status(HttpStatus.CONFLICT).body("There is already a quote with this date");
+//				}
 				
 				boolean validOrNot = validator.dateParse(quote.getKey());
 
 				if (!validOrNot) {
-					return ResponseEntity.status(HttpStatus.CONFLICT).body("Date is not valid");
+					return ResponseEntity.status(HttpStatus.CONFLICT).build();
 				}
 			}
 		}
@@ -64,19 +67,22 @@ public class StockQuoteService {
 		}
 			
 		stockQuoteRepository.save(stockQuote);
-		return ResponseEntity.ok(stockQuote.getStockId() + " was inserted in the repository");
+		return ResponseEntity.ok().body(stockQuote);
 	}
 
-	public List<StockQuote> listStockQuotes(String stockId, Pageable paging) {
+	public List<StockQuote> listStockQuotes() {
+
+		List<StockQuote> stockQuotes = stockQuoteRepository.findAll();
+		return stockQuotes;
+	}
+	
+	public StockQuote getStockQuote(String stockId) {
+		Optional<StockQuote> stockQuote = stockQuoteRepository.findByStockId(stockId);
+		if (stockQuote.isPresent()) {
+			return stockQuote.get();
+		}
 		
-		if (stockId == null) {
-			Page<StockQuote> stockQuotes = stockQuoteRepository.findAll(paging);
-			return stockQuotes.getContent();
-		} else {
-			Page<StockQuote> stockQuote = stockQuoteRepository.findByStockId(
-					stockId, paging);
-			return stockQuote.getContent();
-		}		
+		return null;		
 	}
 
 	public ResponseEntity updateQuotes(StockQuote stockQuote) {
